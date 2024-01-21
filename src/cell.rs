@@ -244,7 +244,7 @@ impl Cell {
     }
 
     /// Print the cell in HTML format to `out`.
-    pub fn print_html<T: Write + ?Sized>(&self, out: &mut T) -> Result<usize, Error> {
+    pub fn print_html<T: Write + ?Sized>(&self, out: &mut T, title: bool) -> Result<usize, Error> {
         /// Convert the color to a hex value useful in CSS
         fn color2hex(color: color::Color) -> &'static str {
             match color {
@@ -306,10 +306,11 @@ impl Cell {
         let content = self.content.join("<br />");
         out.write_all(
             format!(
-                "<td{1} style=\"{2}\">{0}</td>",
+                "<{3}{1} style=\"{2}\">{0}</{3}>",
                 HtmlEscape(&content),
                 colspan,
-                styles
+                styles,
+                if title {"th"} else {"td"}
             )
             .as_bytes(),
         )?;
@@ -437,7 +438,7 @@ mod tests {
         assert_eq!(ascii_cell.get_width(), 5);
 
         let mut out = StringWriter::new();
-        let _ = ascii_cell.print_html(&mut out);
+        let _ = ascii_cell.print_html(&mut out, false);
         assert_eq!(
             out.as_string(),
             r#"<td style="text-align: left;">hello</td>"#
@@ -449,7 +450,7 @@ mod tests {
         let ascii_cell = Cell::new("<abc\">&'");
 
         let mut out = StringWriter::new();
-        let _ = ascii_cell.print_html(&mut out);
+        let _ = ascii_cell.print_html(&mut out, false);
         assert_eq!(
             out.as_string(),
             r#"<td style="text-align: left;">&lt;abc&quot;&gt;&amp;&#39;</td>"#

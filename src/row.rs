@@ -221,14 +221,15 @@ impl Row {
     /// Print the row in HTML format to `out`.
     ///
     /// If the row is has fewer columns than `col_num`, the row is padded with empty cells.
-    pub fn print_html<T: Write + ?Sized>(&self, out: &mut T, col_num: usize) -> Result<(), Error> {
+    /// Parameter `title` tells, if the row is a title-row
+    pub fn print_html<T: Write + ?Sized>(&self, out: &mut T, col_num: usize, title: bool) -> Result<(), Error> {
         let mut printed_columns = 0;
         for cell in self.iter() {
-            printed_columns += cell.print_html(out)?;
+            printed_columns += cell.print_html(out, title)?;
         }
         // Pad with empty cells, if target width is not reached
         for _ in 0..col_num - printed_columns {
-            Cell::default().print_html(out)?;
+            Cell::default().print_html(out, title)?;
         }
         Ok(())
     }

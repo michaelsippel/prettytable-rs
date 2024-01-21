@@ -218,14 +218,14 @@ impl<'a> TableSlice<'a> {
         out.write_all(b"<table>")?;
         // Print titles / table header
         if let Some(ref t) = *self.titles {
-            out.write_all(b"<th>")?;
-            t.print_html(out, column_num)?;
-            out.write_all(b"</th>")?;
+            out.write_all(b"<tr>")?;
+            t.print_html(out, column_num, true)?;
+            out.write_all(b"</tr>")?;
         }
         // Print rows
         for r in self.rows {
             out.write_all(b"<tr>")?;
-            r.print_html(out, column_num)?;
+            r.print_html(out, column_num, false)?;
             out.write_all(b"</tr>")?;
         }
         out.write_all(b"</table>")?;
